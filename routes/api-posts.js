@@ -114,7 +114,7 @@ router.get('/:postId/comments', (req, res) => {
 // example URL:
 // POST /api/v1/posts/102/comments
 router.post('/:postId/comments', (req, res) => {
-  if (!req.body || !req.body.author || !req.body.content) {
+  if (!req.body || !req.body.content) {
     res.status(400).json({
       error: 'Please include all required fields'
     })
@@ -129,7 +129,7 @@ router.post('/:postId/comments', (req, res) => {
         })
       }
       return post.createComment({
-        author: req.body.author,
+        author: req.body.author || 'anonymous',
         content: req.body.content,
         approved: true
       });

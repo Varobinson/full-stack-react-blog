@@ -3,15 +3,16 @@ import { Header, Segment, Button, Form, Comment } from 'semantic-ui-react'
 import { useParams } from 'react-router-dom'
 
 
-export default function Comments() {
+export default function Comments(props) {
   const [ comments, setComments ] = useState([])
-  const [ author,setAuthor ] = useState('')
   const [ content,setContent ] = useState('')
   const [ approved,setApproved ] = useState(true)
   const { postId } = useParams()
 
+
+
   useEffect(() => {
-    fetch(`/api/v1/posts/${postId}/comments`)
+    fetch(`/api/v1/posts/${ props.postId ? props.postId : postId}/comments`)
       .then(res => res.json())
       .then(data => {
         setComments(data);
@@ -19,10 +20,9 @@ export default function Comments() {
   }, [])
 
   const  handleFormSubmit = (e)=>{
-    fetch('/api/v1/posts/comments',{
+    fetch(`/api/v1/posts/${ props.postId ? props.postId : postId}/comments`,{
     method: 'POST',
     body: JSON.stringify({
-        author: author,
         content: content
     }),
     headers: {
@@ -30,7 +30,7 @@ export default function Comments() {
     }
   }).then(res => res.json())
     .then(data => {
-      setAuthor('');
+      setComments(comments.concat(data.comment))
       setContent('');
   })
 }
@@ -43,28 +43,22 @@ export default function Comments() {
                 Comments
                 </Header>
 
-                {comments.map((comment, i)=>{
-                return <div key={i} >
                 <Comment>
                 <Comment.Content>
-                <Comment.Author as='a'>{comment.author}</Comment.Author>
-                    {/* <Comment.Metadata>
-                    <div>{approved? 'approved'}</div>
-                    </Comment.Metadata> */}
-                    <Comment.Text>How artistic!</Comment.Text>
-                    <Comment.Actions>
-                    <Comment.Action>Reply</Comment.Action>
-                    </Comment.Actions>
+                {comments.map((comment, i)=>{
+                return <div key={i} >
+                    <Comment.Text>{comment.content}</Comment.Text>
+                    <Comment.Action>comment {i + 1}</Comment.Action>
+                    
+                </div>
+                })}
                 </Comment.Content>
                 </Comment>
                 <Form id="newPost" onSubmit={handleFormSubmit}>
-                Form TBD
-                    <Form.Input label="Author" required type="text" value={author} onChange={(e)=>{setAuthor(e.target.value)}} />
+                
                     <Form.Input label="Comment" required type="text" value={content} onChange={(e)=>{setContent(e.target.value)}} />
                     <Button positive>Submit</Button>
                 </Form>
-                </div>
-                })}
             </Comment.Group>
         </Segment>
     </div>

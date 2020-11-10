@@ -55,7 +55,7 @@ export default function Posts() {
               <Header size='small'>{ post.author }</Header>
               <p>{ post.content.slice(0, 200)}{ post.content.length > 200 && "..."}</p>
               <Link to={`/post/${post.id}`}>Read More</Link>
-            <Comments />
+            <Comments postId={post.id} />
             </Segment>
           </div>
 
